@@ -1,0 +1,91 @@
+:root {
+  --ocean-deep: #03080f;
+  --ocean-dark: #0a1628;
+  --ocean-mid: #0e3d5c;
+  --ocean-bright: #00b4d8;
+  --ocean-light: #90e0ef;
+  --ocean-foam: #caf0f8;
+  --ocean-surface: #e0f7fa;
+  --font-display: var(--font-display, 'Space Grotesk', sans-serif);
+  --font-body: var(--font-inter, 'Inter', sans-serif);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--ocean-deep);
+  color: var(--ocean-foam);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Card */
+.card-ocean {
+  background: rgba(14, 61, 92, 0.35);
+  border: 1px solid rgba(0, 180, 216, 0.18);
+  border-radius: 14px;
+  transition: all 0.25s;
+}
+.card-ocean:hover {
+  border-color: rgba(0, 180, 216, 0.42);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(0, 180, 216, 0.12);
+}
+
+/* Primary button */
+.btn-ocean {
+  background: linear-gradient(135deg, #00b4d8, #0096c7);
+  color: #fff;
+  border: none;
+  padding: 12px 26px;
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.22s;
+  font-family: var(--font-body);
+}
+.btn-ocean:hover {
+  background: linear-gradient(135deg, #48cae4, #00b4d8);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 180, 216, 0.4);
+}
+
+/* Animations */
+@keyframes floatUp {
+  0%, 100% { transform: translateY(0px) scale(1); opacity: 0.7; }
+  50% { transform: translateY(-18px) scale(1.1); opacity: 1; }
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--ocean-dark); }
+::-webkit-scrollbar-thumb { background: rgba(0, 180, 216, 0.4); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0, 180, 216, 0.7); }
+
+/* Selection */
+::selection { background: rgba(0, 180, 216, 0.3); color: var(--ocean-surface); }
