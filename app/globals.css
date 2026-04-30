@@ -1,13 +1,10 @@
-:root {
-  --ocean-deep: #03080f;
-  --ocean-dark: #0a1628;
-  --ocean-mid: #0e3d5c;
+
+globals_css = ''':root {
+  --ocean-deep: #0a1628;
+  --ocean-surface: #caf0f8;
+  --ocean-foam: #90e0ef;
   --ocean-bright: #00b4d8;
-  --ocean-light: #90e0ef;
-  --ocean-foam: #caf0f8;
-  --ocean-surface: #e0f7fa;
-  --font-display: var(--font-display, 'Space Grotesk', sans-serif);
-  --font-body: var(--font-inter, 'Inter', sans-serif);
+  --font-display: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 * {
@@ -21,48 +18,51 @@ html {
 }
 
 body {
-  font-family: var(--font-body);
+  font-family: var(--font-display);
   background: var(--ocean-deep);
-  color: var(--ocean-foam);
+  color: var(--ocean-surface);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Card */
+/* Card Component */
 .card-ocean {
   background: rgba(14, 61, 92, 0.35);
-  border: 1px solid rgba(0, 180, 216, 0.18);
+  border: 1px solid rgba(0, 180, 216, 0.15);
   border-radius: 14px;
-  transition: all 0.25s;
-}
-.card-ocean:hover {
-  border-color: rgba(0, 180, 216, 0.42);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 28px rgba(0, 180, 216, 0.12);
+  transition: all 0.28s ease;
 }
 
-/* Primary button */
+.card-ocean:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(0, 180, 216, 0.12);
+  border-color: rgba(0, 180, 216, 0.35);
+}
+
+/* Button Component */
 .btn-ocean {
-  background: linear-gradient(135deg, #00b4d8, #0096c7);
-  color: #fff;
+  background: linear-gradient(135deg, rgba(0, 180, 216, 0.9), rgba(0, 150, 199, 0.9));
+  color: #0a1628;
   border: none;
   padding: 12px 26px;
   border-radius: 50px;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.22s;
-  font-family: var(--font-body);
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 20px rgba(0, 180, 216, 0.3);
 }
+
 .btn-ocean:hover {
-  background: linear-gradient(135deg, #48cae4, #00b4d8);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 180, 216, 0.4);
+  box-shadow: 0 8px 30px rgba(0, 180, 216, 0.45);
+  filter: brightness(1.1);
 }
 
 /* Animations */
 @keyframes floatUp {
-  0%, 100% { transform: translateY(0px) scale(1); opacity: 0.7; }
-  50% { transform: translateY(-18px) scale(1.1); opacity: 1; }
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.6; }
+  50% { transform: translateY(-20px) scale(1.1); opacity: 1; }
 }
 
 @keyframes gradientShift {
@@ -72,20 +72,57 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(16px); }
+  from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  50% { opacity: 0.7; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
 }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--ocean-dark); }
-::-webkit-scrollbar-thumb { background: rgba(0, 180, 216, 0.4); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(0, 180, 216, 0.7); }
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(10, 22, 40, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 180, 216, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 180, 216, 0.5);
+}
 
 /* Selection */
-::selection { background: rgba(0, 180, 216, 0.3); color: var(--ocean-surface); }
+::selection {
+  background: rgba(0, 180, 216, 0.3);
+  color: var(--ocean-foam);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .card-ocean:hover {
+    transform: none;
+  }
+  
+  .btn-ocean {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
+'''
+
+with open('/mnt/agents/output/globals.css', 'w', encoding='utf-8') as f:
+    f.write(globals_css)
+
+print("✅ globals.css yazıldı")
