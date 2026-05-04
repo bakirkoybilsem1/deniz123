@@ -2,270 +2,265 @@
 
 import { useMemo, useState } from 'react'
 
-const missions = [
+const stations = [
   {
-    title: 'Kirliliği Tanı',
+    no: '01',
+    title: 'Kirlilik Kaynakları',
+    tag: 'Keşif',
+    desc: 'Plastik, petrol, kimyasal atık ve bilinçsiz tüketimin denize nasıl ulaştığını öğren.',
     icon: '🌊',
-    text: 'Deniz kirliliğinin kaynaklarını, plastik atıkları, petrol sızıntılarını ve kimyasal etkileri öğren.',
   },
   {
-    title: 'Müsilajı Anla',
+    no: '02',
+    title: 'Müsilaj Alarmı',
+    tag: 'Analiz',
+    desc: 'Azot-fosfor yükü, sıcaklık artışı ve durgun suyun müsilajla ilişkisini çöz.',
     icon: '🦠',
-    text: 'Müsilajın neden oluştuğunu, deniz ekosistemine etkilerini ve Marmara Denizi için ne anlama geldiğini keşfet.',
   },
   {
-    title: 'Su Ayak İzini Hesapla',
+    no: '03',
+    title: 'Su Ayak İzi Lab',
+    tag: 'Simülasyon',
+    desc: 'Günlük seçimlerinin görünmeyen su tüketimine nasıl dönüştüğünü hesapla.',
     icon: '💧',
-    text: 'Günlük tüketim alışkanlıklarının görünmeyen su kullanımına nasıl dönüştüğünü fark et.',
   },
   {
-    title: 'Çözüm Üret',
+    no: '04',
+    title: 'Çözüm Planı',
+    tag: 'Eylem',
+    desc: 'Plastik azaltma, atık ayrıştırma ve bilinçli tüketim için uygulanabilir kararlar al.',
     icon: '✅',
-    text: 'Plastik azaltma, atık ayrıştırma, su tasarrufu ve farkındalık oluşturma yollarını uygula.',
   },
 ]
 
-const quizQuestions = [
+const quiz = [
   {
-    q: 'Müsilaj oluşumunu hızlandıran temel etkenlerden biri hangisidir?',
-    options: ['Deniz suyunun tamamen donması', 'Azot ve fosfor yükünün artması', 'Balık sayısının artması'],
-    answer: 1,
+    q: 'Müsilaj oluşumunu hızlandıran önemli etken hangisidir?',
+    options: ['Azot ve fosfor yükünün artması', 'Deniz suyunun tamamen donması', 'Balık sayısının artması'],
+    answer: 0,
   },
   {
     q: 'Mikroplastikler neden tehlikelidir?',
-    options: ['Sadece görüntü kirliliği yapar', 'Besin zincirine karışabilir', 'Deniz suyunu tatlandırır'],
-    answer: 1,
+    options: ['Besin zincirine karışabilir', 'Denizi mavi yaptığı için', 'Sadece sahilde kalır'],
+    answer: 0,
   },
   {
-    q: 'Su ayak izi neyi ifade eder?',
-    options: ['Bir ürünün üretiminde kullanılan toplam suyu', 'Deniz seviyesini', 'Yağmur miktarını'],
+    q: 'Su ayak izi neyi gösterir?',
+    options: ['Bir ürün ya da davranış için harcanan toplam suyu', 'Deniz dalga boyunu', 'Sadece içilen suyu'],
     answer: 0,
   },
 ]
 
-export default function HomePage() {
+export default function Page() {
   const [coffee, setCoffee] = useState(1)
   const [shower, setShower] = useState(1)
   const [meat, setMeat] = useState(0)
-  const [bread, setBread] = useState(2)
+  const [textile, setTextile] = useState(0)
 
-  const [currentQuestion, setCurrentQuestion] = useState(0)
+  const [step, setStep] = useState(0)
   const [selected, setSelected] = useState<number | null>(null)
   const [score, setScore] = useState(0)
-  const [finished, setFinished] = useState(false)
+  const [done, setDone] = useState(false)
 
-  const waterTotal = useMemo(() => {
-    return coffee * 140 + shower * 60 + meat * 500 + bread * 40
-  }, [coffee, shower, meat, bread])
+  const water = useMemo(() => {
+    return coffee * 140 + shower * 60 + meat * 500 + textile * 2700
+  }, [coffee, shower, meat, textile])
 
-  function answerQuiz(index: number) {
+  function selectAnswer(i: number) {
     if (selected !== null) return
-
-    setSelected(index)
-
-    if (index === quizQuestions[currentQuestion].answer) {
-      setScore((s) => s + 1)
-    }
+    setSelected(i)
+    if (i === quiz[step].answer) setScore(score + 1)
   }
 
-  function nextQuestion() {
-    if (currentQuestion + 1 === quizQuestions.length) {
-      setFinished(true)
+  function next() {
+    if (step === quiz.length - 1) {
+      setDone(true)
       return
     }
-
-    setCurrentQuestion((q) => q + 1)
+    setStep(step + 1)
     setSelected(null)
   }
 
-  function restartQuiz() {
-    setCurrentQuestion(0)
+  function reset() {
+    setStep(0)
     setSelected(null)
     setScore(0)
-    setFinished(false)
+    setDone(false)
   }
 
-  const q = quizQuestions[currentQuestion]
+  const active = quiz[step]
 
   return (
     <main>
       <section className="hero">
-        <div className="heroOverlay" />
+        <div className="noise" />
 
-        <div className="heroContent">
-          <div className="badge">Çevre Eğitimi · Etkileşimli Öğrenme · Oyunlaştırma</div>
+        <nav className="nav">
+          <div className="brand">
+            <span>🌊</span>
+            <b>Deniz Koruyucuları</b>
+          </div>
+
+          <div className="navLinks">
+            <a href="#rota">Rota</a>
+            <a href="#lab">Laboratuvar</a>
+            <a href="#gorev">Görev</a>
+          </div>
+        </nav>
+
+        <div className="heroInner">
+          <div className="kicker">Oyunlaştırılmış çevre farkındalık deneyimi</div>
 
           <h1>
-            Denizleri Korumayı
-            <span> Öğren, Uygula ve Oyuna Dönüştür</span>
+            Deniz kirliliğini
+            <span>görevlerle keşfet.</span>
           </h1>
 
           <p>
-            Deniz kirliliği, müsilaj ve su ayak izi konularını sade teorik bilgiler,
-            uygulamalı görevler ve oyunlaştırılmış mini etkinliklerle keşfet.
+            Bu platform bir araştırma raporu değildir. Deniz kirliliği, müsilaj ve su ayak izi
+            konularını görev istasyonları, simülasyon ve mini sınamalarla öğretir.
           </p>
 
-          <div className="heroActions">
-            <a href="#moduller" className="primaryBtn">Keşfetmeye Başla</a>
-            <a href="#oyun" className="secondaryBtn">Mini Göreve Git</a>
+          <div className="heroButtons">
+            <a className="mainBtn" href="#rota">Göreve Başla</a>
+            <a className="ghostBtn" href="#lab">Su Ayak İzi Lab</a>
           </div>
         </div>
       </section>
 
-      <section className="stats">
+      <section className="dashboard">
         <div>
-          <strong>%70</strong>
-          <span>Dünya yüzeyi denizlerle kaplıdır</span>
+          <small>Platform türü</small>
+          <strong>Etkileşimli öğrenme</strong>
         </div>
         <div>
-          <strong>450</strong>
-          <span>Yıl plastik şişenin doğada kalma süresi</span>
+          <small>İçerik dili</small>
+          <strong>Teorik + uygulamalı</strong>
         </div>
         <div>
-          <strong>8M+</strong>
-          <span>Ton plastik her yıl denizlere karışır</span>
+          <small>Hedef davranış</small>
+          <strong>Fark et · karar al · uygula</strong>
         </div>
       </section>
 
-      <section id="moduller" className="container">
-        <div className="sectionHead">
-          <span>01 · Teorik Öğrenme</span>
-          <h2>Konuyu Parçalara Ayır, Adım Adım Öğren</h2>
-          <p>
-            Platform, araştırma raporu formatı yerine öğrenme modülleri üzerinden ilerler.
-            Her modül kısa, anlaşılır ve uygulanabilir bilgi sunar.
-          </p>
+      <section id="rota" className="section">
+        <div className="head">
+          <span>Görev Rotası</span>
+          <h2>Deniz Koruyucusu olmak için 4 istasyonu tamamla.</h2>
         </div>
 
-        <div className="missionGrid">
-          {missions.map((item) => (
-            <article className="missionCard" key={item.title}>
-              <div className="missionIcon">{item.icon}</div>
-              <h3>{item.title}</h3>
-              <p>{item.text}</p>
+        <div className="map">
+          {stations.map((s) => (
+            <article className="station" key={s.no}>
+              <div className="stationTop">
+                <span>{s.no}</span>
+                <em>{s.tag}</em>
+              </div>
+              <div className="stationIcon">{s.icon}</div>
+              <h3>{s.title}</h3>
+              <p>{s.desc}</p>
             </article>
           ))}
         </div>
       </section>
 
-      <section className="darkSection">
-        <div className="container twoCol">
+      <section id="lab" className="lab">
+        <div className="section labGrid">
           <div>
-            <span className="miniLabel">02 · Uygulamalı Etkinlik</span>
-            <h2>Günlük Su Ayak İzi Simülatörü</h2>
+            <span className="eyebrow">Su Ayak İzi Laboratuvarı</span>
+            <h2>Günlük seçimlerini sayısal bir etkiye dönüştür.</h2>
             <p>
-              Bu etkinlik, öğrencinin günlük davranışlarını sayısal bir sonuca dönüştürür.
-              Böylece soyut bir çevre kavramı, kişisel ve anlaşılır bir deneyime dönüşür.
+              Öğrenci burada tüketim davranışlarını girer ve görünmeyen su kullanımını fark eder.
+              Amaç yargılamak değil; farkındalık oluşturmaktır.
             </p>
           </div>
 
-          <div className="calculator">
+          <div className="panel">
             <label>
               Kahve
               <input type="number" min="0" value={coffee} onChange={(e) => setCoffee(Number(e.target.value))} />
-              <small>1 fincan ≈ 140 litre</small>
             </label>
 
             <label>
               Duş
               <input type="number" min="0" value={shower} onChange={(e) => setShower(Number(e.target.value))} />
-              <small>1 duş ≈ 60 litre</small>
             </label>
 
             <label>
-              Et tüketimi
+              Et porsiyonu
               <input type="number" min="0" value={meat} onChange={(e) => setMeat(Number(e.target.value))} />
-              <small>1 porsiyon ≈ 500 litre</small>
             </label>
 
             <label>
-              Ekmek
-              <input type="number" min="0" value={bread} onChange={(e) => setBread(Number(e.target.value))} />
-              <small>1 dilim ≈ 40 litre</small>
+              Pamuklu ürün
+              <input type="number" min="0" value={textile} onChange={(e) => setTextile(Number(e.target.value))} />
             </label>
 
-            <div className="waterResult">
-              <span>Tahmini günlük su ayak izin</span>
-              <strong>{waterTotal.toLocaleString('tr-TR')} litre</strong>
+            <div className="total">
+              <small>Tahmini günlük etki</small>
+              <strong>{water.toLocaleString('tr-TR')} L</strong>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="oyun" className="container">
-        <div className="sectionHead">
-          <span>03 · Oyunlaştırılmış Görev</span>
-          <h2>Deniz Koruyucusu Mini Görevi</h2>
-          <p>
-            Kısa sorularla öğrencinin öğrendiği kavramları pekiştirmesi sağlanır.
-            Doğru cevaplar ilerleme ve puan hissi oluşturur.
-          </p>
+      <section id="gorev" className="section">
+        <div className="head">
+          <span>Mini Görev</span>
+          <h2>Bilgini test et, Deniz Koruyucusu rozetini kazan.</h2>
         </div>
 
-        <div className="gameCard">
-          {!finished ? (
+        <div className="mission">
+          {!done ? (
             <>
-              <div className="progress">
-                <span>Soru {currentQuestion + 1} / {quizQuestions.length}</span>
-                <div>
-                  <i style={{ width: `${((currentQuestion + 1) / quizQuestions.length) * 100}%` }} />
+              <div className="missionHeader">
+                <b>Görev {step + 1} / {quiz.length}</b>
+                <div className="bar">
+                  <i style={{ width: `${((step + 1) / quiz.length) * 100}%` }} />
                 </div>
               </div>
 
-              <h3>{q.q}</h3>
+              <h3>{active.q}</h3>
 
-              <div className="answers">
-                {q.options.map((option, index) => {
-                  const isCorrect = q.answer === index
-                  const isSelected = selected === index
-
-                  let className = 'answerBtn'
-                  if (selected !== null && isCorrect) className += ' correct'
-                  if (selected !== null && isSelected && !isCorrect) className += ' wrong'
+              <div className="options">
+                {active.options.map((o, i) => {
+                  let cls = 'option'
+                  if (selected !== null && i === active.answer) cls += ' correct'
+                  if (selected === i && i !== active.answer) cls += ' wrong'
 
                   return (
-                    <button className={className} key={option} onClick={() => answerQuiz(index)}>
-                      {option}
+                    <button key={o} className={cls} onClick={() => selectAnswer(i)}>
+                      {o}
                     </button>
                   )
                 })}
               </div>
 
               {selected !== null && (
-                <button className="nextBtn" onClick={nextQuestion}>
-                  {currentQuestion + 1 === quizQuestions.length ? 'Sonucu Gör' : 'Sonraki Soru'}
+                <button className="continue" onClick={next}>
+                  {step === quiz.length - 1 ? 'Rozeti Gör' : 'Sonraki Görev'}
                 </button>
               )}
             </>
           ) : (
-            <div className="scoreBox">
-              <span>Görev Tamamlandı</span>
-              <strong>{score} / {quizQuestions.length}</strong>
+            <div className="badgeBox">
+              <div className="bigBadge">🏅</div>
+              <h3>Deniz Koruyucusu Rozeti</h3>
+              <strong>{score} / {quiz.length}</strong>
               <p>
-                {score === quizQuestions.length
-                  ? 'Harika! Deniz koruyucusu rozetini kazandın.'
-                  : 'Güzel başlangıç. Modülleri tekrar inceleyerek puanını artırabilirsin.'}
+                {score === quiz.length
+                  ? 'Mükemmel! Tüm görevleri başarıyla tamamladın.'
+                  : 'Görev tamamlandı. Daha yüksek puan için tekrar deneyebilirsin.'}
               </p>
-              <button onClick={restartQuiz}>Tekrar Oyna</button>
+              <button onClick={reset}>Tekrar Başlat</button>
             </div>
           )}
         </div>
       </section>
 
-      <section className="container">
-        <div className="callout">
-          <h2>Bu Platformun Amacı</h2>
-          <p>
-            Bu sayfa bir araştırma raporu değildir. Amaç; öğrencilerin ve ailelerin deniz
-            kirliliğini anlaması, günlük yaşamla ilişkilendirmesi ve çevre dostu davranışlar
-            geliştirmesidir.
-          </p>
-        </div>
-      </section>
-
       <footer>
-        <strong>Deniz Kirliliğiyle Mücadele Kiti</strong>
-        <span>Öğren · Uygula · Oyna · Denizleri Koru</span>
+        <b>Deniz Koruyucuları Akademisi</b>
+        <span>Öğren · Uygula · Görevleri Tamamla</span>
       </footer>
     </main>
   )
