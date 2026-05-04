@@ -2,265 +2,256 @@
 
 import { useMemo, useState } from 'react'
 
-const stations = [
-  {
-    no: '01',
-    title: 'Kirlilik Kaynakları',
-    tag: 'Keşif',
-    desc: 'Plastik, petrol, kimyasal atık ve bilinçsiz tüketimin denize nasıl ulaştığını öğren.',
-    icon: '🌊',
-  },
-  {
-    no: '02',
-    title: 'Müsilaj Alarmı',
-    tag: 'Analiz',
-    desc: 'Azot-fosfor yükü, sıcaklık artışı ve durgun suyun müsilajla ilişkisini çöz.',
-    icon: '🦠',
-  },
-  {
-    no: '03',
-    title: 'Su Ayak İzi Lab',
-    tag: 'Simülasyon',
-    desc: 'Günlük seçimlerinin görünmeyen su tüketimine nasıl dönüştüğünü hesapla.',
-    icon: '💧',
-  },
-  {
-    no: '04',
-    title: 'Çözüm Planı',
-    tag: 'Eylem',
-    desc: 'Plastik azaltma, atık ayrıştırma ve bilinçli tüketim için uygulanabilir kararlar al.',
-    icon: '✅',
-  },
+const trashItems = [
+  { name: 'Plastik Şişe', type: 'bad', icon: '🥤' },
+  { name: 'Balık', type: 'good', icon: '🐟' },
+  { name: 'Petrol Atığı', type: 'bad', icon: '🛢️' },
+  { name: 'Deniz Çayırı', type: 'good', icon: '🌱' },
+  { name: 'Poşet', type: 'bad', icon: '🛍️' },
+  { name: 'Mercan', type: 'good', icon: '🪸' },
 ]
 
-const quiz = [
+const riskQuestions = [
   {
-    q: 'Müsilaj oluşumunu hızlandıran önemli etken hangisidir?',
-    options: ['Azot ve fosfor yükünün artması', 'Deniz suyunun tamamen donması', 'Balık sayısının artması'],
-    answer: 0,
+    title: 'Fabrika atığı denize karışıyor.',
+    options: [
+      { text: 'Görmezden gel', point: -1 },
+      { text: 'Yetkililere bildir', point: 2 },
+    ],
   },
   {
-    q: 'Mikroplastikler neden tehlikelidir?',
-    options: ['Besin zincirine karışabilir', 'Denizi mavi yaptığı için', 'Sadece sahilde kalır'],
-    answer: 0,
+    title: 'Sahilde plastik atık gördün.',
+    options: [
+      { text: 'Toplama kutusuna at', point: 2 },
+      { text: 'Orada bırak', point: -1 },
+    ],
   },
   {
-    q: 'Su ayak izi neyi gösterir?',
-    options: ['Bir ürün ya da davranış için harcanan toplam suyu', 'Deniz dalga boyunu', 'Sadece içilen suyu'],
-    answer: 0,
+    title: 'Evde gereksiz su akıyor.',
+    options: [
+      { text: 'Musluğu kapat', point: 2 },
+      { text: 'Açık bırak', point: -1 },
+    ],
   },
 ]
 
 export default function Page() {
-  const [coffee, setCoffee] = useState(1)
-  const [shower, setShower] = useState(1)
-  const [meat, setMeat] = useState(0)
-  const [textile, setTextile] = useState(0)
+  const [cleaned, setCleaned] = useState<string[]>([])
+  const [wrong, setWrong] = useState(0)
 
-  const [step, setStep] = useState(0)
-  const [selected, setSelected] = useState<number | null>(null)
-  const [score, setScore] = useState(0)
-  const [done, setDone] = useState(false)
+  const [waterChoices, setWaterChoices] = useState({
+    bottle: false,
+    shortShower: false,
+    lessMeat: false,
+    recycle: false,
+  })
 
-  const water = useMemo(() => {
-    return coffee * 140 + shower * 60 + meat * 500 + textile * 2700
-  }, [coffee, shower, meat, textile])
+  const [riskIndex, setRiskIndex] = useState(0)
+  const [riskScore, setRiskScore] = useState(0)
+  const [finished, setFinished] = useState(false)
 
-  function selectAnswer(i: number) {
-    if (selected !== null) return
-    setSelected(i)
-    if (i === quiz[step].answer) setScore(score + 1)
-  }
+  const cleanScore = cleaned.length
+  const waterScore = Object.values(waterChoices).filter(Boolean).length
 
-  function next() {
-    if (step === quiz.length - 1) {
-      setDone(true)
-      return
+  const totalScore = useMemo(() => {
+    return cleanScore + waterScore + riskScore
+  }, [cleanScore, waterScore, riskScore])
+
+  function clickSeaItem(item: typeof trashItems[number]) {
+    if (item.type === 'bad') {
+      if (!cleaned.includes(item.name)) {
+        setCleaned([...cleaned, item.name])
+      }
+    } else {
+      setWrong(wrong + 1)
     }
-    setStep(step + 1)
-    setSelected(null)
   }
 
-  function reset() {
-    setStep(0)
-    setSelected(null)
-    setScore(0)
-    setDone(false)
+  function answerRisk(point: number) {
+    setRiskScore(riskScore + point)
+
+    if (riskIndex === riskQuestions.length - 1) {
+      setFinished(true)
+    } else {
+      setRiskIndex(riskIndex + 1)
+    }
   }
 
-  const active = quiz[step]
+  function resetGame() {
+    setCleaned([])
+    setWrong(0)
+    setWaterChoices({
+      bottle: false,
+      shortShower: false,
+      lessMeat: false,
+      recycle: false,
+    })
+    setRiskIndex(0)
+    setRiskScore(0)
+    setFinished(false)
+  }
 
   return (
     <main>
       <section className="hero">
-        <div className="noise" />
-
-        <nav className="nav">
-          <div className="brand">
-            <span>🌊</span>
-            <b>Deniz Koruyucuları</b>
-          </div>
-
-          <div className="navLinks">
-            <a href="#rota">Rota</a>
-            <a href="#lab">Laboratuvar</a>
-            <a href="#gorev">Görev</a>
-          </div>
-        </nav>
-
-        <div className="heroInner">
-          <div className="kicker">Oyunlaştırılmış çevre farkındalık deneyimi</div>
-
-          <h1>
-            Deniz kirliliğini
-            <span>görevlerle keşfet.</span>
-          </h1>
-
+        <div className="heroText">
+          <span className="label">Etkileşimli çevre oyunu</span>
+          <h1>Deniz Görevleri</h1>
           <p>
-            Bu platform bir araştırma raporu değildir. Deniz kirliliği, müsilaj ve su ayak izi
-            konularını görev istasyonları, simülasyon ve mini sınamalarla öğretir.
+            Denizi kirletenleri bul, doğru kararları ver, deniz koruyucusu rozetini kazan.
           </p>
-
-          <div className="heroButtons">
-            <a className="mainBtn" href="#rota">Göreve Başla</a>
-            <a className="ghostBtn" href="#lab">Su Ayak İzi Lab</a>
-          </div>
+          <a href="#oyun" className="startBtn">Oyuna Başla</a>
         </div>
       </section>
 
-      <section className="dashboard">
-        <div>
-          <small>Platform türü</small>
-          <strong>Etkileşimli öğrenme</strong>
-        </div>
-        <div>
-          <small>İçerik dili</small>
-          <strong>Teorik + uygulamalı</strong>
-        </div>
-        <div>
-          <small>Hedef davranış</small>
-          <strong>Fark et · karar al · uygula</strong>
-        </div>
-      </section>
-
-      <section id="rota" className="section">
-        <div className="head">
-          <span>Görev Rotası</span>
-          <h2>Deniz Koruyucusu olmak için 4 istasyonu tamamla.</h2>
-        </div>
-
-        <div className="map">
-          {stations.map((s) => (
-            <article className="station" key={s.no}>
-              <div className="stationTop">
-                <span>{s.no}</span>
-                <em>{s.tag}</em>
-              </div>
-              <div className="stationIcon">{s.icon}</div>
-              <h3>{s.title}</h3>
-              <p>{s.desc}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section id="lab" className="lab">
-        <div className="section labGrid">
+      <section id="oyun" className="gameWrap">
+        <div className="scorePanel">
           <div>
-            <span className="eyebrow">Su Ayak İzi Laboratuvarı</span>
-            <h2>Günlük seçimlerini sayısal bir etkiye dönüştür.</h2>
-            <p>
-              Öğrenci burada tüketim davranışlarını girer ve görünmeyen su kullanımını fark eder.
-              Amaç yargılamak değil; farkındalık oluşturmaktır.
-            </p>
+            <small>Temizlik</small>
+            <strong>{cleanScore} / 3</strong>
           </div>
+          <div>
+            <small>Karar</small>
+            <strong>{waterScore} / 4</strong>
+          </div>
+          <div>
+            <small>Risk</small>
+            <strong>{riskScore}</strong>
+          </div>
+          <div>
+            <small>Toplam</small>
+            <strong>{totalScore}</strong>
+          </div>
+        </div>
 
-          <div className="panel">
-            <label>
-              Kahve
-              <input type="number" min="0" value={coffee} onChange={(e) => setCoffee(Number(e.target.value))} />
-            </label>
-
-            <label>
-              Duş
-              <input type="number" min="0" value={shower} onChange={(e) => setShower(Number(e.target.value))} />
-            </label>
-
-            <label>
-              Et porsiyonu
-              <input type="number" min="0" value={meat} onChange={(e) => setMeat(Number(e.target.value))} />
-            </label>
-
-            <label>
-              Pamuklu ürün
-              <input type="number" min="0" value={textile} onChange={(e) => setTextile(Number(e.target.value))} />
-            </label>
-
-            <div className="total">
-              <small>Tahmini günlük etki</small>
-              <strong>{water.toLocaleString('tr-TR')} L</strong>
+        <div className="missionGrid">
+          <section className="missionCard seaMission">
+            <div className="missionHead">
+              <span>Görev 1</span>
+              <h2>Denizi Temizle</h2>
+              <p>Kirleticileri seç. Canlılara dokunma.</p>
             </div>
-          </div>
-        </div>
-      </section>
 
-      <section id="gorev" className="section">
-        <div className="head">
-          <span>Mini Görev</span>
-          <h2>Bilgini test et, Deniz Koruyucusu rozetini kazan.</h2>
-        </div>
-
-        <div className="mission">
-          {!done ? (
-            <>
-              <div className="missionHeader">
-                <b>Görev {step + 1} / {quiz.length}</b>
-                <div className="bar">
-                  <i style={{ width: `${((step + 1) / quiz.length) * 100}%` }} />
-                </div>
-              </div>
-
-              <h3>{active.q}</h3>
-
-              <div className="options">
-                {active.options.map((o, i) => {
-                  let cls = 'option'
-                  if (selected !== null && i === active.answer) cls += ' correct'
-                  if (selected === i && i !== active.answer) cls += ' wrong'
-
-                  return (
-                    <button key={o} className={cls} onClick={() => selectAnswer(i)}>
-                      {o}
-                    </button>
-                  )
-                })}
-              </div>
-
-              {selected !== null && (
-                <button className="continue" onClick={next}>
-                  {step === quiz.length - 1 ? 'Rozeti Gör' : 'Sonraki Görev'}
+            <div className="seaBox">
+              {trashItems.map((item) => (
+                <button
+                  key={item.name}
+                  onClick={() => clickSeaItem(item)}
+                  className={cleaned.includes(item.name) ? 'seaItem cleaned' : 'seaItem'}
+                >
+                  <span>{item.icon}</span>
+                  <small>{item.name}</small>
                 </button>
-              )}
-            </>
-          ) : (
-            <div className="badgeBox">
-              <div className="bigBadge">🏅</div>
-              <h3>Deniz Koruyucusu Rozeti</h3>
-              <strong>{score} / {quiz.length}</strong>
-              <p>
-                {score === quiz.length
-                  ? 'Mükemmel! Tüm görevleri başarıyla tamamladın.'
-                  : 'Görev tamamlandı. Daha yüksek puan için tekrar deneyebilirsin.'}
-              </p>
-              <button onClick={reset}>Tekrar Başlat</button>
+              ))}
             </div>
-          )}
+
+            {wrong > 0 && (
+              <div className="warning">
+                Deniz canlılarına dokunma. Sadece kirleticileri temizle.
+              </div>
+            )}
+          </section>
+
+          <section className="missionCard">
+            <div className="missionHead">
+              <span>Görev 2</span>
+              <h2>Doğru Kararları Seç</h2>
+              <p>Denizi koruyan davranışları işaretle.</p>
+            </div>
+
+            <div className="choiceList">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={waterChoices.bottle}
+                  onChange={(e) => setWaterChoices({ ...waterChoices, bottle: e.target.checked })}
+                />
+                Matara kullanırım
+              </label>
+
+              <label>
+                <input
+                  type="checkbox"
+                  checked={waterChoices.shortShower}
+                  onChange={(e) => setWaterChoices({ ...waterChoices, shortShower: e.target.checked })}
+                />
+                Duş süremi azaltırım
+              </label>
+
+              <label>
+                <input
+                  type="checkbox"
+                  checked={waterChoices.lessMeat}
+                  onChange={(e) => setWaterChoices({ ...waterChoices, lessMeat: e.target.checked })}
+                />
+                Daha bilinçli tüketirim
+              </label>
+
+              <label>
+                <input
+                  type="checkbox"
+                  checked={waterChoices.recycle}
+                  onChange={(e) => setWaterChoices({ ...waterChoices, recycle: e.target.checked })}
+                />
+                Atıkları ayrıştırırım
+              </label>
+            </div>
+          </section>
+
+          <section className="missionCard">
+            <div className="missionHead">
+              <span>Görev 3</span>
+              <h2>Müsilaj Risk Kararı</h2>
+              <p>Her durumda denizi koruyan seçimi yap.</p>
+            </div>
+
+            {!finished ? (
+              <div className="riskBox">
+                <h3>{riskQuestions[riskIndex].title}</h3>
+
+                {riskQuestions[riskIndex].options.map((option) => (
+                  <button key={option.text} onClick={() => answerRisk(option.point)}>
+                    {option.text}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="resultBox">
+                <h3>Görev tamamlandı</h3>
+                <p>Risk puanın: {riskScore}</p>
+              </div>
+            )}
+          </section>
+
+          <section className="missionCard finalCard">
+            <div className="missionHead">
+              <span>Final</span>
+              <h2>Deniz Koruyucusu Rozeti</h2>
+              <p>Görevlerden topladığın puana göre rozet kazan.</p>
+            </div>
+
+            <div className="badge">
+              {totalScore >= 10 ? '🏆' : totalScore >= 6 ? '🥈' : '🌊'}
+            </div>
+
+            <h3>
+              {totalScore >= 10
+                ? 'Usta Deniz Koruyucusu'
+                : totalScore >= 6
+                ? 'Deniz Gönüllüsü'
+                : 'Göreve Devam'}
+            </h3>
+
+            <button className="resetBtn" onClick={resetGame}>
+              Baştan Oyna
+            </button>
+          </section>
         </div>
       </section>
 
       <footer>
-        <b>Deniz Koruyucuları Akademisi</b>
-        <span>Öğren · Uygula · Görevleri Tamamla</span>
+        <strong>Deniz Görevleri</strong>
+        <span>Oyna · Karar Ver · Denizleri Koru</span>
       </footer>
     </main>
   )
